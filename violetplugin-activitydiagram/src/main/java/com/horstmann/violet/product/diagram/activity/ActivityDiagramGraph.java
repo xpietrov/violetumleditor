@@ -50,6 +50,34 @@ public class ActivityDiagramGraph extends AbstractGraph
     }
 
     @Override
+    public boolean addNode(INode newNode, Point2D p) {
+        if(isSceanrioStartNode(newNode)){
+            if(!isScenerioStartNodeAdded()){
+                return super.addNode(newNode, p);
+            }
+            return false;
+        }
+        return super.addNode(newNode, p);
+    }
+
+
+    private boolean isScenerioStartNodeAdded(){
+        for(INode eachNodes : super.getAllNodes()){
+            if(isSceanrioStartNode(eachNodes)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isSceanrioStartNode(INode node){
+        if(ScenarioStartNode.class.isInstance(node)){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean connect(IEdge e, INode start, Point2D startLocation, INode end, Point2D endLocation, Point2D[] transitionPoints)
     {
         if (!ActivityTransitionEdge.class.isInstance(e))
