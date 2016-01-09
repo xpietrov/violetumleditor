@@ -43,6 +43,7 @@ import com.horstmann.violet.workspace.editorpart.behavior.AddTransitionPointBeha
 import com.horstmann.violet.workspace.editorpart.behavior.ChangeToolByWeelBehavior;
 import com.horstmann.violet.workspace.editorpart.behavior.ColorizeBehavior;
 import com.horstmann.violet.workspace.editorpart.behavior.CutCopyPasteBehavior;
+import com.horstmann.violet.workspace.editorpart.behavior.DefaultToolOnAddBehavior;
 import com.horstmann.violet.workspace.editorpart.behavior.DragGraphBehavior;
 import com.horstmann.violet.workspace.editorpart.behavior.DragSelectedBehavior;
 import com.horstmann.violet.workspace.editorpart.behavior.DragTransitionPointBehavior;
@@ -169,6 +170,7 @@ public class Workspace implements IWorkspace
             behaviorManager.addBehavior(new CutCopyPasteBehavior(this.graphEditor));
             behaviorManager.addBehavior(new SwingRepaintingBehavior(this.graphEditor));
             behaviorManager.addBehavior(new ColorizeBehavior(this, this.getSideBar().getColorChoiceBar()));
+            behaviorManager.addBehavior(new DefaultToolOnAddBehavior(this.getSideBar().getGraphToolsBar()));
         }
         return this.graphEditor;
     }
