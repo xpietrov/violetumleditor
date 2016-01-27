@@ -1,49 +1,90 @@
 package com.horstmann.violet.workspace.editorpart.behavior;
 
+import com.horstmann.violet.product.diagram.abstracts.edge.IEdge;
+import com.horstmann.violet.product.diagram.abstracts.node.INode;
 import com.horstmann.violet.workspace.sidebar.graphtools.GraphTool;
 import com.horstmann.violet.workspace.sidebar.graphtools.IGraphToolsBar;
 
-import java.awt.event.InputEvent;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
 
 /**
- *
+ * Adding behavior, if Ctrl is pressed then user can add multiple Nodes and Edge
  * Created by piter on 09.01.16.
  */
 public class DefaultToolOnAddBehavior extends AbstractEditorPartBehavior {
     private final IGraphToolsBar graphToolsBar;
+    private boolean isKeyPressed = false;
 
-    public DefaultToolOnAddBehavior(IGraphToolsBar graphToolsBar) {
+    /**
+     *  Default constructor of class
+     * @param graphToolsBar current graph tool bar
+     */
+    public DefaultToolOnAddBehavior(final IGraphToolsBar graphToolsBar) {
         this.graphToolsBar = graphToolsBar;
+        initKeyListener();
     }
 
     @Override
-    public void onMouseClicked(MouseEvent event) {
-        if(event.getClickCount() > 1){
-            return;
+    public void afterAddingNodeAtPoint(final INode node, final Point2D location) {
+        if(node != null){
+            setDefaultGraphTool();
         }
+    }
 
-        if(event.getButton() != MouseEvent.BUTTON1){
-            return;
+    @Override
+    public void afterAddingEdgeAtPoints(final IEdge edge, final Point2D startPoint, final Point2D endPoint) {
+        if(edge != null){
+            setDefaultGraphTool();
         }
-
-        boolean isCtrl = (event.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0;
-        if(isCtrl){
-            return;
-        }
-
-        setDefaultGraphTool();
     }
 
     private void setDefaultGraphTool(){
-        GraphTool defaultGraphTool = GraphTool.SELECTION_TOOL;
-        GraphTool currentGraphTool = graphToolsBar.getSelectedTool();
+        final GraphTool defaultGraphTool = GraphTool.SELECTION_TOOL;
+        final GraphTool currentGraphTool = graphToolsBar.getSelectedTool();
 
         if(currentGraphTool.equals(defaultGraphTool)){
             return;
         }
-        graphToolsBar.setSelectedTool(defaultGraphTool);
+
+        if(isKeyPressed) {
+            graphToolsBar.setSelectedTool(defaultGraphTool);
+        }
     }
 
+    private void initKeyListener(){
+        KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                .addKeyEventDispatcher(new CtrlKeyListener());
 
+    }
+
+    private class CtrlKeyListener implements KeyEventDispatcher {
+
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent event) {
+            {
+                switch (event.getID()) {
+                    case KeyEvent.KEY_PRESSED:
+                        if (isCtrlKeyPressed(event)) {
+                            isKeyPressed = false;
+                            System.out.println("Czołem");
+                        }
+                        break;
+
+                    case KeyEvent.KEY_RELEASED:
+                        if (!isCtrlKeyPressed(event)) {
+                            isKeyPressed = true;
+                        }
+                        break;
+                }
+                return false;
+            }
+        }
+
+        private boolean isCtrlKeyPressed(final KeyEvent event){
+            boolean isPressed = event.isControlDown();
+            return isPressed;
+        }
+    }
 }
