@@ -13,7 +13,8 @@ import java.awt.geom.Point2D;
  * Adding behavior, if Ctrl is pressed then user can add multiple Nodes and Edge
  * Created by piter on 09.01.16.
  */
-public class DefaultToolOnAddBehavior extends AbstractEditorPartBehavior {
+public class DefaultToolOnAddBehavior extends AbstractEditorPartBehavior
+{
     private final IGraphToolsBar graphToolsBar;
     private boolean isKeyPressed = false;
 
@@ -21,68 +22,78 @@ public class DefaultToolOnAddBehavior extends AbstractEditorPartBehavior {
      *  Default constructor of class
      * @param graphToolsBar current graph tool bar
      */
-    public DefaultToolOnAddBehavior(final IGraphToolsBar graphToolsBar) {
+    public DefaultToolOnAddBehavior(final IGraphToolsBar graphToolsBar)
+    {
         this.graphToolsBar = graphToolsBar;
         initKeyListener();
     }
 
     @Override
-    public void afterAddingNodeAtPoint(final INode node, final Point2D location) {
-        if(node != null){
+    public void afterAddingNodeAtPoint(final INode node, final Point2D location)
+    {
+        if(node != null)
+        {
             setDefaultGraphTool();
         }
     }
 
     @Override
-    public void afterAddingEdgeAtPoints(final IEdge edge, final Point2D startPoint, final Point2D endPoint) {
-        if(edge != null){
+    public void afterAddingEdgeAtPoints(final IEdge edge, final Point2D startPoint, final Point2D endPoint)
+    {
+        if(edge != null)
+        {
             setDefaultGraphTool();
         }
     }
 
-    private void setDefaultGraphTool(){
+    private void setDefaultGraphTool()
+    {
         final GraphTool defaultGraphTool = GraphTool.SELECTION_TOOL;
         final GraphTool currentGraphTool = graphToolsBar.getSelectedTool();
 
-        if(currentGraphTool.equals(defaultGraphTool)){
+        if(currentGraphTool.equals(defaultGraphTool))
+        {
             return;
         }
 
-        if(isKeyPressed) {
+        if(isKeyPressed)
+        {
             graphToolsBar.setSelectedTool(defaultGraphTool);
         }
     }
 
-    private void initKeyListener(){
+    private void initKeyListener()
+    {
         KeyboardFocusManager.getCurrentKeyboardFocusManager()
                 .addKeyEventDispatcher(new CtrlKeyListener());
-
     }
 
-    private class CtrlKeyListener implements KeyEventDispatcher {
-
+    private class CtrlKeyListener implements KeyEventDispatcher
+    {
         @Override
-        public boolean dispatchKeyEvent(KeyEvent event) {
+        public boolean dispatchKeyEvent(KeyEvent event)
+        {
+            switch (event.getID())
             {
-                switch (event.getID()) {
-                    case KeyEvent.KEY_PRESSED:
-                        if (isCtrlKeyPressed(event)) {
-                            isKeyPressed = false;
-                            System.out.println("Czołem");
-                        }
-                        break;
+                case KeyEvent.KEY_PRESSED:
+                    if (isCtrlKeyPressed(event))
+                    {
+                        isKeyPressed = false;
+                    }
+                    break;
 
-                    case KeyEvent.KEY_RELEASED:
-                        if (!isCtrlKeyPressed(event)) {
-                            isKeyPressed = true;
-                        }
-                        break;
-                }
-                return false;
+                case KeyEvent.KEY_RELEASED:
+                    if (!isCtrlKeyPressed(event))
+                    {
+                        isKeyPressed = true;
+                    }
+                    break;
             }
+            return false;
         }
 
-        private boolean isCtrlKeyPressed(final KeyEvent event){
+        private boolean isCtrlKeyPressed(final KeyEvent event)
+        {
             boolean isPressed = event.isControlDown();
             return isPressed;
         }
