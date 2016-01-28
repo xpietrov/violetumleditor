@@ -21,18 +21,18 @@
 
 package com.horstmann.violet.product.diagram.activity;
 
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import com.horstmann.violet.product.diagram.abstracts.AbstractGraph;
 import com.horstmann.violet.product.diagram.abstracts.edge.IEdge;
 import com.horstmann.violet.product.diagram.abstracts.node.INode;
 import com.horstmann.violet.product.diagram.abstracts.property.BentStyle;
 import com.horstmann.violet.product.diagram.common.NoteEdge;
 import com.horstmann.violet.product.diagram.common.NoteNode;
+
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * An UML activity diagram.
@@ -50,29 +50,27 @@ public class ActivityDiagramGraph extends AbstractGraph
     }
 
     @Override
-    public boolean addNode(INode newNode, Point2D p) {
-        if(isSceanrioStartNode(newNode)){
-            if(!isScenerioStartNodeAdded()){
-                return super.addNode(newNode, p);
+    public boolean addNode(INode newNode, Point2D p)
+    {
+        if(ScenarioStartNode.class.isInstance(newNode))
+        {
+            if(isScenerioStartNodeAdded())
+            {
+                return false;
             }
-            return false;
+            return super.addNode(newNode, p);
         }
         return super.addNode(newNode, p);
     }
 
-
-    private boolean isScenerioStartNodeAdded(){
-        for(INode eachNodes : super.getAllNodes()){
-            if(isSceanrioStartNode(eachNodes)){
+    private boolean isScenerioStartNodeAdded()
+    {
+        for(INode eachNodes : super.getAllNodes())
+        {
+            if(ScenarioStartNode.class.isInstance(eachNodes))
+            {
                 return true;
             }
-        }
-        return false;
-    }
-
-    private boolean isSceanrioStartNode(INode node){
-        if(ScenarioStartNode.class.isInstance(node)){
-            return true;
         }
         return false;
     }
