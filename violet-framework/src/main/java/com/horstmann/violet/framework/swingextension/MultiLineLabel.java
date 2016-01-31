@@ -1,11 +1,9 @@
 package com.horstmann.violet.framework.swingextension;
 
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.*;
+import java.awt.font.TextAttribute;
+import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
 import java.util.StringTokenizer;
 
 /**
@@ -24,6 +22,8 @@ public class MultiLineLabel extends Canvas {
 	public static final int CENTER = 1;
 
 	public static final int RIGHT = 2;
+
+	public static final String STATIC_ELEMENT = "<<static>>";
 
 	protected String[] lines; // The lines of text to display
 
@@ -126,6 +126,26 @@ public class MultiLineLabel extends Canvas {
 		repaint();
 	}
 
+	private boolean isContainStatic(String line){
+		if(line.contains(STATIC_ELEMENT)){
+			return true;
+		}
+		return false;
+	}
+
+	private String removeStaticElement(String line){
+		String lineWithoutStatic = line.replace(STATIC_ELEMENT, " ");
+		return lineWithoutStatic;
+	}
+
+	private AttributedCharacterIterator setUnderlineString(String line, Font font){
+		final String lineWithoutStatic = removeStaticElement(line);
+
+		AttributedString stringWithUnderline = new AttributedString(lineWithoutStatic, font.getAttributes());
+		stringWithUnderline.addAttribute(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+		return stringWithUnderline.getIterator();
+	}
+
 	public int getAlignment() {
 		return alignment;
 	}
@@ -183,7 +203,11 @@ public class MultiLineLabel extends Canvas {
 			}
 			Font oldFont = g.getFont();
 			g.setFont(getFont());
-			g.drawString(lines[i], x, y);
+			if(isContainStatic(lines[i])){
+				g.drawString(setUnderlineString(lines[i], g.getFont()), x ,y);
+			} else {
+				g.drawString(lines[i], x, y);
+			}
 			g.setFont(oldFont);
 		}
 	}
