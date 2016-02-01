@@ -1,13 +1,13 @@
 package com.horstmann.violet.product.diagram.usecase;
 
+import com.horstmann.violet.framework.plugin.IDiagramPlugin;
+import com.horstmann.violet.framework.plugin.extensionpoint.Violet016FileFilterExtensionPoint;
+import com.horstmann.violet.product.diagram.abstracts.IGraph;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-
-import com.horstmann.violet.framework.plugin.IDiagramPlugin;
-import com.horstmann.violet.framework.plugin.extensionpoint.Violet016FileFilterExtensionPoint;
-import com.horstmann.violet.product.diagram.abstracts.IGraph;
 
 /**
  * Describes use case diagram graph type
@@ -27,7 +27,7 @@ public class UseCaseDiagramPlugin implements IDiagramPlugin, Violet016FileFilter
     @Override
     public String getProvider()
     {
-        return "Alexandre de Pellegrin / Cays S. Horstmann";
+        return "Alexandre de Pellegrin / Cays S. Horstmann / Piotr Janik";
     }
 
     @Override

@@ -21,15 +21,14 @@
 
 package com.horstmann.violet.product.diagram.usecase;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
 import com.horstmann.violet.product.diagram.abstracts.edge.IEdge;
 import com.horstmann.violet.product.diagram.abstracts.node.EllipticalNode;
 import com.horstmann.violet.product.diagram.abstracts.property.MultiLineString;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 
 /**
  * A use case node in a use case diagram.
@@ -41,25 +40,61 @@ public class UseCaseNode extends EllipticalNode
      */
     public UseCaseNode()
     {
-        name = new MultiLineString();
+        title = new MultiLineString();
+        title.setSize(MultiLineString.LARGE);
+        title.setJustification(MultiLineString.CENTER);
+        description = new MultiLineString();
+        description.setJustification(MultiLineString.CENTER);
+    }
+
+    private Rectangle2D getTitleBounds()
+    {
+        Rectangle2D globalBounds = new Rectangle2D.Double(0, 0, 0, 0);
+        Rectangle2D titleBounds = title.getBounds();
+        globalBounds.add(titleBounds);
+        boolean isTitleEmpty = (description.getText().length() == 0);
+        double defaultHeight = DEFAULT_HEIGHT;
+        if (!isTitleEmpty)
+        {
+            defaultHeight = DEFAULT_COMPARTMENT_HEIGHT;
+        }
+        globalBounds.add(new Rectangle2D.Double(0, 0, DEFAULT_WIDTH, defaultHeight));
+        Point2D currentLocation = getLocation();
+        double x = currentLocation.getX();
+        double y = currentLocation.getY();
+        double w = globalBounds.getWidth();
+        double h = globalBounds.getHeight();
+        globalBounds.setFrame(x, y, w, h);
+        Rectangle2D snappedBounds = getGraph().getGridSticker().snap(globalBounds);
+        return snappedBounds;
+    }
+
+    private Rectangle2D getDescirptionBounds()
+    {
+        Rectangle2D globalBounds = new Rectangle2D.Double(0, 0, 0, 0);
+        Rectangle2D descriptionBounds = description.getBounds();
+        globalBounds.add(descriptionBounds);
+        if (descriptionBounds.getHeight() > 0)
+        {
+            globalBounds.add(new Rectangle2D.Double(0, 0, DEFAULT_WIDTH, DEFAULT_COMPARTMENT_HEIGHT));
+        }
+        Rectangle2D topBounds = getTitleBounds();
+        double x = topBounds.getX();
+        double y = topBounds.getMaxY();
+        double w = globalBounds.getWidth();
+        double h = globalBounds.getHeight();
+        globalBounds.setFrame(x, y, w, h);
+        Rectangle2D snappedBounds = getGraph().getGridSticker().snap(globalBounds);
+        return snappedBounds;
     }
 
     @Override
     public Rectangle2D getBounds()
     {
-        double aspectRatio = DEFAULT_WIDTH / DEFAULT_HEIGHT;
-        Rectangle2D b = name.getBounds();
-        double bw = b.getWidth();
-        double bh = b.getHeight();
-        double minWidth = Math.sqrt(bw * bw + aspectRatio * aspectRatio * bh * bh);
-        double minHeight = minWidth / aspectRatio;
-        Point2D currentLocation = getLocation();
-        double x = currentLocation.getX();
-        double y = currentLocation.getY();
-        double w = Math.max(minWidth, DEFAULT_WIDTH);
-        double h = Math.max(minHeight, DEFAULT_HEIGHT);
-        Rectangle2D currentBounds = new Rectangle2D.Double(x, y, w, h);
-        Rectangle2D snappedBounds = getGraph().getGridSticker().snap(currentBounds);
+        Rectangle2D top = getTitleBounds();
+        Rectangle2D bot = getDescirptionBounds();
+        top.add(bot);
+        Rectangle2D snappedBounds = getGraph().getGridSticker().snap(top);
         return snappedBounds;
     }
 
@@ -76,12 +111,30 @@ public class UseCaseNode extends EllipticalNode
     }
 
     @Override
+    public Shape getShape()
+    {
+        Rectangle2D bounds = getBounds();
+        return new RoundRectangle2D.Double(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), 50, 50);
+    }
+
+    @Override
     public void draw(Graphics2D g2)
     {
+        Color oldColor = g2.getColor();
         super.draw(g2);
 
-        // Backup current color;
-        Color oldColor = g2.getColor();
+        Rectangle2D currentBounds = getBounds();
+        Rectangle2D nameBounds = getTitleBounds();
+        Rectangle2D descriptionBounds = getDescirptionBounds();
+        if (nameBounds.getWidth() < currentBounds.getWidth())
+        {
+            nameBounds.setRect(nameBounds.getX(), nameBounds.getY(), currentBounds.getWidth(), nameBounds.getHeight());
+        }
+
+        if (descriptionBounds.getWidth() < currentBounds.getWidth())
+        {
+            descriptionBounds.setRect(descriptionBounds.getX(), descriptionBounds.getY(), currentBounds.getWidth(), descriptionBounds.getHeight());
+        }
 
         // Draw shape and text
         Shape shape = getShape();
@@ -90,42 +143,62 @@ public class UseCaseNode extends EllipticalNode
         g2.setColor(getBorderColor());
         g2.draw(shape);
         g2.setColor(getTextColor());
-        name.draw(g2, getBounds());
+        title.draw(g2, nameBounds);
+        description.draw(g2, descriptionBounds);
 
         // Restore first color
         g2.setColor(oldColor);
     }
 
     /**
-     * Sets the name property value.
+     * Sets the title property value.
      * 
-     * @param newValue the new use case name
+     * @param newValue the new use case title
      */
-    public void setName(MultiLineString newValue)
+    public void setTitle(MultiLineString newValue)
     {
-        name = newValue;
+        title = newValue;
     }
 
     /**
-     * Gets the name property value.
-     * 
-     * @param the use case name
+     * Gets the title property value.
      */
-    public MultiLineString getName()
+    public MultiLineString getTitle()
     {
-        return name;
+        return title;
+    }
+
+    /**
+     * Gets the description property value.
+     * @return MultiLineString
+     */
+    public MultiLineString getDescription()
+    {
+        return description;
+    }
+
+    /**
+     * Sets the description property value
+     * @param description the new use case description
+     */
+    public void setDescription(MultiLineString description)
+    {
+        this.description = description;
     }
 
     @Override
     public UseCaseNode clone()
     {
         UseCaseNode cloned = (UseCaseNode) super.clone();
-        cloned.name = name.clone();
+        cloned.title = title.clone();
+        cloned.description = description.clone();
         return cloned;
     }
 
-    private MultiLineString name;
+    private MultiLineString title;
+    private MultiLineString description;
 
+    private static int DEFAULT_COMPARTMENT_HEIGHT = 10;
     private static int DEFAULT_WIDTH = 110;
     private static int DEFAULT_HEIGHT = 40;
 }
