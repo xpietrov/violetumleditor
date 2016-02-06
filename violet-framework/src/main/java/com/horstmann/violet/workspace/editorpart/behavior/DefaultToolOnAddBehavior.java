@@ -15,9 +15,6 @@ import java.awt.geom.Point2D;
  */
 public class DefaultToolOnAddBehavior extends AbstractEditorPartBehavior
 {
-    private final IGraphToolsBar graphToolsBar;
-    private boolean isKeyPressed = false;
-
     /**
      *  Default constructor of class
      * @param graphToolsBar current graph tool bar
@@ -98,4 +95,7 @@ public class DefaultToolOnAddBehavior extends AbstractEditorPartBehavior
             return isPressed;
         }
     }
+
+    private final IGraphToolsBar graphToolsBar;
+    private boolean isKeyPressed = false;
 }
