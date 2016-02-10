@@ -27,7 +27,7 @@ public class UseCaseDiagramPlugin implements IDiagramPlugin, Violet016FileFilter
     @Override
     public String getProvider()
     {
-        return "Alexandre de Pellegrin / Cays S. Horstmann / Piotr Janik";
+        return "Alexandre de Pellegrin / Cays S. Horstmann";
     }
 
     @Override
