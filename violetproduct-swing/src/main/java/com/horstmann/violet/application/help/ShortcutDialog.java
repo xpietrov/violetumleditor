@@ -44,8 +44,8 @@ public class ShortcutDialog extends JDialog
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.getContentPane().setLayout(new BorderLayout());
         this.getContentPane().add(buildShortcutPanel(), BorderLayout.CENTER);
-        setCenterLocation(parent);
         pack();
+        setCenterLocation(parent);
     }
 
     private JPanel buildShortcutPanel()
